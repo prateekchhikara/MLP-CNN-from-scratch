@@ -38,16 +38,18 @@ class Module(object):
 class TestFCGeLU(Module):
     def __init__(self, keep_prob=0, dtype=np.float32, seed=None):
         self.net = sequential(
-            ########## TODO: ##########
-            ########### END ###########
+            flatten(name='flatten_input'),
+            fc(15, 5, name='fc1'),
+            gelu(name='gelu1')
         )
 
 
 class SmallFullyConnectedNetwork(Module):
     def __init__(self, keep_prob=0, dtype=np.float32, seed=None):
         self.net = sequential(
-            ########## TODO: ##########
-            ########### END ###########
+            fc(4, 30, init_scale=0.02, name='fc1'),
+            gelu(),
+            fc(30, 7, init_scale=0.02, name='fc2')
         )
 
 
@@ -67,12 +69,23 @@ class DropoutNet(Module):
         )
 
 
+# class TinyNet(Module):
+#     def __init__(self, keep_prob=0, dtype=np.float32, seed=None):
+#         """ Some comments """
+#         self.net = sequential(
+#             flatten(),
+#             fullyConnected(in_features=15, out_features=5, name="fc1"),
+#             gelu()
+#         )
+
 class TinyNet(Module):
     def __init__(self, keep_prob=0, dtype=np.float32, seed=None):
         """ Some comments """
         self.net = sequential(
-            ########## TODO: ##########
-            ########### END ###########
+            flatten(),
+            fc(3072, 128, name="fc1"),
+            gelu(),
+            fc(128, 20, name="fc2")
         )
 
 class DropoutNetTest(Module):

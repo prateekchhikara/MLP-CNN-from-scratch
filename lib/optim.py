@@ -45,7 +45,8 @@ class SGD(Optimizer):
             #############################################################################
             # TODO: Implement the SGD with (optional) Weight Decay                      #
             #############################################################################
-            pass
+            dv += self.weight_decay * layer.params[n]
+            layer.params[n] -= self.lr * dv
             #############################################################################
             #                             END OF YOUR CODE                              #
             #############################################################################
@@ -68,7 +69,31 @@ class Adam(Optimizer):
         #############################################################################
         # TODO: Implement the Adam with [optinal] Weight Decay                      #
         #############################################################################
-        pass
+        params = layer.params
+        grads = layer.grads
+
+        for param_name in params:
+            # Compute gradient w.r.t. weight decay
+            if self.weight_decay > 0:
+                grads[param_name] += self.weight_decay * params[param_name]
+
+            # Initialize mt and vt
+            if param_name not in self.mt:
+                self.mt[param_name] = np.zeros_like(params[param_name])
+                self.vt[param_name] = np.zeros_like(params[param_name])
+
+            # Update mt and vt
+            self.mt[param_name] = self.beta1 * self.mt[param_name] + (1 - self.beta1) * grads[param_name]
+            self.vt[param_name] = self.beta2 * self.vt[param_name] + (1 - self.beta2) * (grads[param_name] ** 2)
+
+            # Bias correction
+            mt_hat = self.mt[param_name] / (1 - self.beta1 ** (self.t + 1))
+            vt_hat = self.vt[param_name] / (1 - self.beta2 ** (self.t + 1))
+
+            # Update weight
+            params[param_name] -= self.lr * mt_hat / (np.sqrt(vt_hat) + self.eps)
+
+        self.t += 1
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################

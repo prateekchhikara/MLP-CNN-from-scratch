@@ -153,7 +153,17 @@ def train_net(data, model, loss_func, optimizer, batch_size, max_epochs,
             # Notice: In backward pass, you should enable regularization.               #
             # Store the loss to loss_hist                                               #
             #############################################################################
+            outputs = model.forward(data_batch)
+            # Compute the loss 
+            loss = loss_func.forward(outputs, labels_batch) 
+            grads = loss_func.backward() 
             
+            # Backward Pass 
+            model.backward(grads, regularization)
+            # Optimizer step
+            optimizer.step()
+            # Store the loss in loss_hist
+            loss_hist.append(loss)
             #############################################################################
             #                             END OF YOUR CODE                              #
             #############################################################################
@@ -172,7 +182,9 @@ def train_net(data, model, loss_func, optimizer, batch_size, max_epochs,
         # compute_acc method, store the results to train_acc and val_acc,           #
         # respectively                                                              #
         #############################################################################
-        
+        train_acc = compute_acc(model, data_train, labels_train)
+        # valloader = DataLoader(data_val, labels_val, batch_size)
+        val_acc = compute_acc(model, data_val, labels_val)
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################
@@ -185,7 +197,10 @@ def train_net(data, model, loss_func, optimizer, batch_size, max_epochs,
             # TODO: Save the optimal parameters to opt_params variable by name using    #
             # model.net.gather_params method                                            #
             #############################################################################
-            pass
+            opt_val_acc = val_acc
+            model.net.gather_params()
+            opt_params = model.net.params
+            # print(model)
             #############################################################################
             #                             END OF YOUR CODE                              #
             #############################################################################
